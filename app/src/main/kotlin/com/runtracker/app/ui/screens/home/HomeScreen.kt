@@ -1,5 +1,6 @@
 package com.runtracker.app.ui.screens.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,11 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runtracker.app.ui.components.StatCard
+import com.runtracker.app.ui.components.SectionTitle
 import com.runtracker.app.ui.theme.*
 import com.runtracker.app.util.LocationUtils
 import com.runtracker.app.viewmodel.RunViewModel
@@ -35,17 +40,19 @@ fun HomeScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("RunTracker", fontWeight = FontWeight.Bold, color = AccentGreen) },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text("RunTracker", fontWeight = FontWeight.Bold, color = TextPrimary)
+                },
                 actions = {
                     IconButton(onClick = onSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Pengaturan", tint = AccentGreen)
+                        Icon(Icons.Default.Settings, contentDescription = "Pengaturan", tint = TextSecondary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = SurfaceLight)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = BackgroundLight
     ) { padding ->
         Column(
             modifier = Modifier
@@ -55,25 +62,28 @@ fun HomeScreen(
                 .padding(Dimensions.screen_padding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(Dimensions.spacing_xxxxl))
+            Spacer(modifier = Modifier.height(Dimensions.spacing_xl))
 
             Box(
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(180.dp)
+                    .shadow(12.dp, CircleShape)
                     .clip(CircleShape)
-                    .background(Brush.radialGradient(colors = listOf(Green600, Green800)))
+                    .background(
+                        Brush.linearGradient(colors = listOf(RunningGradientStart, RunningGradientEnd))
+                    )
                     .clickable { onStartRun() },
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        Icons.Default.DirectionsRun,
+                        Icons.Default.PlayArrow,
                         contentDescription = "Mulai Lari",
-                        tint = AccentGreen,
-                        modifier = Modifier.size(Dimensions.icon_xxl)
+                        tint = Color.White,
+                        modifier = Modifier.size(56.dp)
                     )
-                    Spacer(modifier = Modifier.height(Dimensions.spacing_sm))
-                    Text("MULAI", color = AccentGreen, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("MULAI", color = Color.White, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
                 }
             }
 
@@ -82,15 +92,19 @@ fun HomeScreen(
             OutlinedButton(
                 onClick = onStartInterval,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = AccentGreen),
-                border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = ClaudeOrange),
+                border = BorderStroke(1.5.dp, ClaudeOrange),
+                shape = RoundedCornerShape(Dimensions.radius_xl)
             ) {
                 Icon(Icons.Default.Repeat, contentDescription = null, modifier = Modifier.size(Dimensions.icon_md))
                 Spacer(modifier = Modifier.width(Dimensions.spacing_sm))
-                Text("Interval Training", fontWeight = FontWeight.Bold)
+                Text("Interval Training", fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(modifier = Modifier.height(Dimensions.spacing_xxl))
+
+            SectionTitle("Minggu Ini")
+            Spacer(modifier = Modifier.height(Dimensions.spacing_md))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -106,22 +120,21 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.spacing_md)
             ) {
-                StatCard(modifier = Modifier.weight(1f), label = "Jumlah Lari", value = "${viewModel.weeklyCount.value} kali", icon = Icons.Default.History)
+                StatCard(modifier = Modifier.weight(1f), label = "Lari", value = "${viewModel.weeklyCount.value}x", icon = Icons.Default.History)
                 StatCard(modifier = Modifier.weight(1f), label = "Durasi", value = LocationUtils.formatDuration(viewModel.weeklyDuration.value), icon = Icons.Default.Timer)
             }
 
             Spacer(modifier = Modifier.height(Dimensions.spacing_xxl))
 
-            Text("Rekor Terbaik", color = AccentGreen, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxxl)
-
+            SectionTitle("Rekor Terbaik")
             Spacer(modifier = Modifier.height(Dimensions.spacing_md))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.spacing_md)
             ) {
-                StatCard(modifier = Modifier.weight(1f), label = "Jarak Terjauh", value = LocationUtils.formatDistance(viewModel.bestDistance.value), icon = Icons.Default.EmojiEvents)
-                StatCard(modifier = Modifier.weight(1f), label = "Pace Terbaik", value = LocationUtils.formatPace(viewModel.bestPace.value), icon = Icons.Default.Speed)
+                StatCard(modifier = Modifier.weight(1f), label = "Terjauh", value = LocationUtils.formatDistance(viewModel.bestDistance.value), icon = Icons.Default.EmojiEvents)
+                StatCard(modifier = Modifier.weight(1f), label = "Terbaik", value = LocationUtils.formatPace(viewModel.bestPace.value), icon = Icons.Default.Speed)
             }
 
             Spacer(modifier = Modifier.height(Dimensions.spacing_xxl))
@@ -130,8 +143,8 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Dimensions.spacing_md)
             ) {
-                BottomButton(modifier = Modifier.weight(1f), label = "Riwayat", icon = Icons.Default.History, onClick = onHistory)
-                BottomButton(modifier = Modifier.weight(1f), label = "Statistik", icon = Icons.Default.BarChart, onClick = onStats)
+                NavigationCard(modifier = Modifier.weight(1f), label = "Riwayat", icon = Icons.Default.History, onClick = onHistory)
+                NavigationCard(modifier = Modifier.weight(1f), label = "Statistik", icon = Icons.Default.BarChart, onClick = onStats)
             }
 
             Spacer(modifier = Modifier.height(Dimensions.spacing_lg))
@@ -140,20 +153,22 @@ fun HomeScreen(
 }
 
 @Composable
-fun BottomButton(modifier: Modifier = Modifier, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
+fun NavigationCard(modifier: Modifier = Modifier, label: String, icon: ImageVector, onClick: () -> Unit) {
     Card(
         modifier = modifier.clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Green600),
-        shape = RoundedCornerShape(Dimensions.radius_md)
+        colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+        border = BorderStroke(1.dp, DividerColor),
+        shape = RoundedCornerShape(Dimensions.radius_lg),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(Dimensions.card_padding),
+            modifier = Modifier.fillMaxWidth().padding(Dimensions.spacing_lg),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null, tint = AccentGreen, modifier = Modifier.size(Dimensions.icon_md))
+            Icon(icon, contentDescription = null, tint = ClaudeOrange, modifier = Modifier.size(Dimensions.icon_md))
             Spacer(modifier = Modifier.width(Dimensions.spacing_sm))
-            Text(label, color = AccentGreen, fontWeight = FontWeight.Bold)
+            Text(label, color = TextPrimary, fontWeight = FontWeight.SemiBold)
         }
     }
 }

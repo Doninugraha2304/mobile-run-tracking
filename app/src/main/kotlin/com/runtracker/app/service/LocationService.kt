@@ -22,6 +22,7 @@ import com.google.android.gms.location.Priority
 import com.runtracker.app.MainActivity
 import com.runtracker.app.R
 import com.runtracker.app.util.Constants
+import com.runtracker.app.util.GpsKalmanFilter
 import com.runtracker.app.util.LocationUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +53,6 @@ class LocationService : Service() {
     private val _elapsedTime = MutableStateFlow(0L)
     val elapsedTime: StateFlow<Long> = _elapsedTime
 
-    private var lastLocation: Location? = null
     private var timerThread: Thread? = null
 
     private val binder = LocationBinder()
@@ -88,34 +88,38 @@ class LocationService : Service() {
         }
     }
 
-    private var filteredLocation: Location? = null
+    private val gpsFilter = GpsKalmanFilter()
+    private var lastRecordedLat = 0.0
+    private var lastRecordedLon = 0.0
+    private var hasRecordedPoint = false
 
     private fun onNewLocation(location: Location) {
-        if (location.accuracy > 30f) return
+        val result = gpsFilter.process(location)
+        val speedKmh = location.speed * 3.6
 
-        val newPoint = Pair(location.latitude, location.longitude)
+        _currentSpeed.value = speedKmh
+        _currentLocation.value = Pair(result.latitude, result.longitude)
 
-        if (filteredLocation == null) {
-            filteredLocation = location
-            _currentLocation.value = newPoint
-            _routePoints.value = listOf(newPoint)
-            _currentSpeed.value = location.speed * 3.6
+        if (result.isStationary) return
+
+        if (!hasRecordedPoint) {
+            lastRecordedLat = result.latitude
+            lastRecordedLon = result.longitude
+            hasRecordedPoint = true
+            _routePoints.value = listOf(Pair(result.latitude, result.longitude))
             return
         }
 
-        val distanceToLast = LocationUtils.calculateDistance(
-            filteredLocation!!.latitude, filteredLocation!!.longitude,
-            location.latitude, location.longitude
+        val distance = LocationUtils.calculateDistance(
+            lastRecordedLat, lastRecordedLon,
+            result.latitude, result.longitude
         )
 
-        val speedKmh = location.speed * 3.6
-        _currentSpeed.value = speedKmh
-
-        if (distanceToLast > 5f && speedKmh > 1.5f) {
-            _totalDistance.value += distanceToLast
-            _routePoints.value = _routePoints.value + newPoint
-            filteredLocation = location
-            _currentLocation.value = newPoint
+        if (distance > 5f) {
+            _totalDistance.value += distance
+            _routePoints.value = _routePoints.value + Pair(result.latitude, result.longitude)
+            lastRecordedLat = result.latitude
+            lastRecordedLon = result.longitude
         }
     }
 
@@ -125,8 +129,8 @@ class LocationService : Service() {
         _totalDistance.value = 0.0
         _routePoints.value = emptyList()
         _currentLocation.value = null
-        lastLocation = null
-        filteredLocation = null
+        gpsFilter.reset()
+        hasRecordedPoint = false
 
         startForeground(Constants.LOCATION_SERVICE_NOTIFICATION_ID, buildNotification("Menyiapkan GPS..."))
         startLocationUpdates()

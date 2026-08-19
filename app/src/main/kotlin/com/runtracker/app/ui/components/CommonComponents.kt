@@ -1,13 +1,16 @@
 package com.runtracker.app.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.runtracker.app.ui.theme.*
 
 @Composable
@@ -19,31 +22,27 @@ fun StatCard(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
-        shape = RoundedCornerShape(Dimensions.radius_md)
+        colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+        shape = RoundedCornerShape(Dimensions.radius_lg),
+        border = BorderStroke(1.dp, DividerColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
-            modifier = Modifier.padding(Dimensions.card_padding),
+            modifier = Modifier.padding(Dimensions.spacing_lg),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = AccentGreen,
-                modifier = Modifier.size(Dimensions.icon_lg)
-            )
+            Surface(
+                shape = RoundedCornerShape(Dimensions.radius_md),
+                color = ClaudeOrangeLight,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(imageVector = icon, contentDescription = null, tint = ClaudeOrange, modifier = Modifier.size(20.dp))
+                }
+            }
             Spacer(modifier = Modifier.height(Dimensions.spacing_sm))
-            Text(
-                value,
-                color = AccentGreen,
-                fontWeight = FontWeight.Bold,
-                fontSize = Dimensions.text_xl
-            )
-            Text(
-                label,
-                color = LightGray,
-                fontSize = Dimensions.text_sm
-            )
+            Text(value, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xl)
+            Text(label, color = TextSecondary, fontSize = Dimensions.text_sm)
         }
     }
 }
@@ -58,11 +57,12 @@ fun PrimaryButton(
     Button(
         onClick = onClick,
         modifier = modifier.height(Dimensions.button_height),
-        colors = ButtonDefaults.buttonColors(containerColor = Green600),
-        shape = RoundedCornerShape(Dimensions.radius_xxl),
-        enabled = enabled
+        colors = ButtonDefaults.buttonColors(containerColor = ClaudeOrange),
+        shape = RoundedCornerShape(Dimensions.radius_xl),
+        enabled = enabled,
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
     ) {
-        Text(text, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
+        Text(text, fontWeight = FontWeight.SemiBold, fontSize = Dimensions.text_xxl, color = Color.White)
     }
 }
 
@@ -76,12 +76,13 @@ fun DangerButton(
     Button(
         onClick = onClick,
         modifier = modifier.height(Dimensions.button_height),
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-        shape = RoundedCornerShape(Dimensions.radius_xxl)
+        colors = ButtonDefaults.buttonColors(containerColor = ClaudeRed),
+        shape = RoundedCornerShape(Dimensions.radius_xl),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
     ) {
         icon?.invoke()
         if (icon != null) Spacer(modifier = Modifier.width(Dimensions.spacing_sm))
-        Text(text, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
+        Text(text, fontWeight = FontWeight.SemiBold, fontSize = Dimensions.text_xxl, color = Color.White)
     }
 }
 
@@ -89,7 +90,7 @@ fun DangerButton(
 fun SectionTitle(text: String) {
     Text(
         text,
-        color = AccentGreen,
+        color = TextPrimary,
         fontWeight = FontWeight.Bold,
         fontSize = Dimensions.text_xxxl
     )
@@ -102,23 +103,17 @@ fun RealtimeStat(
     icon: ImageVector
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = AccentGreen,
-            modifier = Modifier.size(Dimensions.icon_md)
-        )
+        Surface(
+            shape = RoundedCornerShape(Dimensions.radius_sm),
+            color = ClaudeOrangeLight,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(imageVector = icon, contentDescription = null, tint = ClaudeOrange, modifier = Modifier.size(18.dp))
+            }
+        }
         Spacer(modifier = Modifier.height(Dimensions.spacing_xs))
-        Text(
-            value,
-            color = AccentGreen,
-            fontWeight = FontWeight.Bold,
-            fontSize = Dimensions.text_xl
-        )
-        Text(
-            label,
-            color = LightGray,
-            fontSize = Dimensions.text_sm
-        )
+        Text(value, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xl)
+        Text(label, color = TextSecondary, fontSize = Dimensions.text_sm)
     }
 }

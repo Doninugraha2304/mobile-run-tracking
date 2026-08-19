@@ -1,24 +1,19 @@
 package com.runtracker.app.ui.screens.history
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DirectionsRun
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runtracker.app.data.db.RunEntity
 import com.runtracker.app.ui.theme.*
@@ -37,65 +32,34 @@ fun HistoryScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Riwayat Lari", fontWeight = FontWeight.Bold, color = AccentGreen)
-                },
+            CenterAlignedTopAppBar(
+                title = { Text("Riwayat Lari", fontWeight = FontWeight.Bold, color = TextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Kembali",
-                            tint = AccentGreen
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = TextPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = SurfaceLight)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = BackgroundLight
     ) { padding ->
         if (runs.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Default.DirectionsRun,
-                        contentDescription = null,
-                        tint = LightGray,
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "Belum ada riwayat lari",
-                        color = LightGray,
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        "Mulai lari pertamamu!",
-                        color = LightGray.copy(alpha = 0.6f),
-                        fontSize = 14.sp
-                    )
+                    Icon(Icons.Default.DirectionsRun, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(64.dp))
+                    Spacer(modifier = Modifier.height(Dimensions.spacing_lg))
+                    Text("Belum ada riwayat lari", color = TextSecondary, fontSize = Dimensions.text_xl)
+                    Text("Mulai lari pertamamu!", color = TextTertiary, fontSize = Dimensions.text_lg)
                 }
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
+                modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = Dimensions.spacing_lg),
+                verticalArrangement = Arrangement.spacedBy(Dimensions.spacing_md),
+                contentPadding = PaddingValues(vertical = Dimensions.spacing_lg)
             ) {
-                items(runs) { run ->
-                    RunHistoryCard(run = run)
-                }
+                items(runs) { run -> RunHistoryCard(run = run) }
             }
         }
     }
@@ -107,100 +71,62 @@ fun RunHistoryCard(run: RunEntity) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
-        shape = RoundedCornerShape(12.dp)
+        colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+        border = BorderStroke(1.dp, DividerColor),
+        shape = RoundedCornerShape(Dimensions.radius_lg),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(Dimensions.spacing_lg)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.CalendarToday,
-                        contentDescription = null,
-                        tint = Green400,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        dateFormat.format(Date(run.endTime)),
-                        color = Green400,
-                        fontSize = 13.sp
-                    )
+                Icon(Icons.Default.CalendarToday, contentDescription = null, tint = ClaudeOrange, modifier = Modifier.size(14.dp))
+                Spacer(modifier = Modifier.width(Dimensions.spacing_xs))
+                Text(dateFormat.format(Date(run.endTime)), color = TextSecondary, fontSize = Dimensions.text_sm)
+                if (run.isInterval) {
+                    Spacer(modifier = Modifier.width(Dimensions.spacing_sm))
+                    Surface(shape = RoundedCornerShape(Dimensions.spacing_xxs), color = ClaudeOrangeLight) {
+                        Text("Interval", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), color = ClaudeOrange, fontSize = Dimensions.text_xs, fontWeight = FontWeight.SemiBold)
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Dimensions.spacing_md))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RunStatItem(
-                    icon = Icons.Default.DirectionsRun,
-                    value = LocationUtils.formatDistance(run.distance),
-                    label = "Jarak"
-                )
-                RunStatItem(
-                    icon = Icons.Default.Speed,
-                    value = LocationUtils.formatSpeed(run.avgSpeed),
-                    label = "Kecepatan"
-                )
-                RunStatItem(
-                    icon = Icons.Default.LocalFireDepartment,
-                    value = String.format("%.0f kk", run.calories),
-                    label = "Kalori"
-                )
+                RunStatItem(icon = Icons.Default.DirectionsRun, value = LocationUtils.formatDistance(run.distance), label = "Jarak")
+                RunStatItem(icon = Icons.Default.Speed, value = LocationUtils.formatSpeed(run.avgSpeed), label = "Kecepatan")
+                RunStatItem(icon = Icons.Default.LocalFireDepartment, value = String.format("%.0f kk", run.calories), label = "Kalori")
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Dimensions.spacing_sm))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    "Durasi: ${LocationUtils.formatDuration(run.duration)}",
-                    color = LightGray,
-                    fontSize = 13.sp
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    "Pace: ${LocationUtils.formatPace(run.avgPace)}",
-                    color = LightGray,
-                    fontSize = 13.sp
-                )
+                Text("Durasi: ${LocationUtils.formatDuration(run.duration)}", color = TextTertiary, fontSize = Dimensions.text_sm)
+                Spacer(modifier = Modifier.width(Dimensions.spacing_lg))
+                Text("Pace: ${LocationUtils.formatPace(run.avgPace)}", color = TextTertiary, fontSize = Dimensions.text_sm)
             }
         }
     }
 }
 
 @Composable
-fun RunStatItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    value: String,
-    label: String
-) {
+fun RunStatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = AccentGreen,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            value,
-            color = AccentGreen,
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
-        )
-        Text(
-            label,
-            color = LightGray,
-            fontSize = 11.sp
-        )
+        Surface(shape = RoundedCornerShape(Dimensions.radius_sm), color = ClaudeOrangeLight, modifier = Modifier.size(28.dp)) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(imageVector = icon, contentDescription = null, tint = ClaudeOrange, modifier = Modifier.size(14.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(Dimensions.spacing_xs))
+        Text(value, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_lg)
+        Text(label, color = TextTertiary, fontSize = Dimensions.text_xs)
     }
 }

@@ -1,5 +1,6 @@
 package com.runtracker.app.ui.screens.settings
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +11,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,17 +44,17 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Pengaturan", fontWeight = FontWeight.Bold, color = AccentGreen) },
+            CenterAlignedTopAppBar(
+                title = { Text("Pengaturan", fontWeight = FontWeight.Bold, color = TextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = AccentGreen)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = TextPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = SurfaceLight)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = BackgroundLight
     ) { padding ->
         Column(
             modifier = Modifier
@@ -71,10 +74,10 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = AccentGreen,
-                    unfocusedBorderColor = LightGray,
-                    focusedLabelColor = AccentGreen,
-                    cursorColor = AccentGreen
+                    focusedBorderColor = ClaudeOrange,
+                    unfocusedBorderColor = BorderColor,
+                    focusedLabelColor = ClaudeOrange,
+                    cursorColor = ClaudeOrange
                 )
             )
 
@@ -84,20 +87,21 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Satuan", color = AccentGreen, fontWeight = FontWeight.Bold)
-                    Text(if (isMetric) "Kilometer" else "Miles", color = LightGray, fontSize = Dimensions.text_sm)
+                    Text("Satuan", color = TextPrimary, fontWeight = FontWeight.Bold)
+                    Text(if (isMetric) "Kilometer" else "Miles", color = TextSecondary, fontSize = Dimensions.text_sm)
                 }
                 Switch(
                     checked = isMetric,
                     onCheckedChange = { viewModel.setMetric(it) },
                     colors = SwitchDefaults.colors(
-                        checkedTrackColor = AccentGreen,
-                        checkedThumbColor = Green800
+                        checkedTrackColor = ClaudeOrange,
+                        checkedThumbColor = Color.White,
+                        uncheckedTrackColor = DividerColor
                     )
                 )
             }
 
-            HorizontalDivider(color = DarkSurfaceVariant)
+            HorizontalDivider(color = DividerColor)
 
             SectionTitle("Target Harian")
 
@@ -109,10 +113,10 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = AccentGreen,
-                    unfocusedBorderColor = LightGray,
-                    focusedLabelColor = AccentGreen,
-                    cursorColor = AccentGreen
+                    focusedBorderColor = ClaudeOrange,
+                    unfocusedBorderColor = BorderColor,
+                    focusedLabelColor = ClaudeOrange,
+                    cursorColor = ClaudeOrange
                 )
             )
 
@@ -124,14 +128,14 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = AccentGreen,
-                    unfocusedBorderColor = LightGray,
-                    focusedLabelColor = AccentGreen,
-                    cursorColor = AccentGreen
+                    focusedBorderColor = ClaudeOrange,
+                    unfocusedBorderColor = BorderColor,
+                    focusedLabelColor = ClaudeOrange,
+                    cursorColor = ClaudeOrange
                 )
             )
 
-            HorizontalDivider(color = DarkSurfaceVariant)
+            HorizontalDivider(color = DividerColor)
 
             SectionTitle("Suara")
 
@@ -141,15 +145,16 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Pengumuman Suara", color = AccentGreen, fontWeight = FontWeight.Bold)
-                    Text("Setiap 1 km", color = LightGray, fontSize = Dimensions.text_sm)
+                    Text("Pengumuman Suara", color = TextPrimary, fontWeight = FontWeight.Bold)
+                    Text("Setiap 1 km", color = TextSecondary, fontSize = Dimensions.text_sm)
                 }
                 Switch(
                     checked = voiceEnabled,
                     onCheckedChange = { viewModel.setVoiceAnnouncement(it) },
                     colors = SwitchDefaults.colors(
-                        checkedTrackColor = AccentGreen,
-                        checkedThumbColor = Green800
+                        checkedTrackColor = ClaudeOrange,
+                        checkedThumbColor = Color.White,
+                        uncheckedTrackColor = DividerColor
                     )
                 )
             }
@@ -167,10 +172,11 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Dimensions.button_height),
-                colors = ButtonDefaults.buttonColors(containerColor = Green600),
-                shape = RoundedCornerShape(Dimensions.radius_xxl)
+                colors = ButtonDefaults.buttonColors(containerColor = ClaudeOrange),
+                shape = RoundedCornerShape(Dimensions.radius_xxl),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
             ) {
-                Text("Simpan", fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
+                Text("Simpan", fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl, color = Color.White)
             }
         }
     }

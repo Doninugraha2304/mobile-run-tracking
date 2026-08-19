@@ -1,5 +1,6 @@
 package com.runtracker.app.ui.screens.stats
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +11,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runtracker.app.ui.components.SectionTitle
@@ -41,17 +44,17 @@ fun StatsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Statistik", fontWeight = FontWeight.Bold, color = AccentGreen) },
+            CenterAlignedTopAppBar(
+                title = { Text("Statistik", fontWeight = FontWeight.Bold, color = TextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = AccentGreen)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = TextPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = SurfaceLight)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = BackgroundLight
     ) { padding ->
         Column(
             modifier = Modifier
@@ -70,8 +73,10 @@ fun StatsScreen(
             SectionTitle("Total Semua")
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
-                shape = RoundedCornerShape(Dimensions.radius_lg)
+                colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+                border = BorderStroke(1.dp, DividerColor),
+                shape = RoundedCornerShape(Dimensions.radius_lg),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(modifier = Modifier.padding(Dimensions.card_padding)) {
                     StatsRow(
@@ -101,7 +106,7 @@ fun StatsScreen(
 }
 
 data class StatsItemData(
-    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val icon: ImageVector,
     val value: String,
     val label: String
 )
@@ -110,8 +115,10 @@ data class StatsItemData(
 fun StatsSummaryCard(distance: Double, calories: Double, count: Int, duration: Long) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
-        shape = RoundedCornerShape(Dimensions.radius_lg)
+        colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+        border = BorderStroke(1.dp, DividerColor),
+        shape = RoundedCornerShape(Dimensions.radius_lg),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(Dimensions.card_padding)) {
             StatsRow(
@@ -144,15 +151,15 @@ fun StatsRow(items: List<StatsItemData>) {
 }
 
 @Composable
-fun StatsItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    value: String,
-    label: String
-) {
+fun StatsItem(icon: ImageVector, value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(imageVector = icon, contentDescription = null, tint = AccentGreen, modifier = Modifier.size(Dimensions.icon_xl))
+        Surface(shape = RoundedCornerShape(Dimensions.radius_sm), color = ClaudeOrangeLight, modifier = Modifier.size(36.dp)) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(imageVector = icon, contentDescription = null, tint = ClaudeOrange, modifier = Modifier.size(18.dp))
+            }
+        }
         Spacer(modifier = Modifier.height(Dimensions.spacing_sm))
-        Text(value, color = AccentGreen, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
-        Text(label, color = LightGray, fontSize = Dimensions.text_md)
+        Text(value, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
+        Text(label, color = TextSecondary, fontSize = Dimensions.text_md)
     }
 }
