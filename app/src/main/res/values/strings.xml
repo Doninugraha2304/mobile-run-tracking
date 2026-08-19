@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RunTracker</string>
+    <string name="location_service_channel">Pelacakan Lari</string>
+    <string name="split_notification_channel">Notifikasi Split</string>
 </resources>

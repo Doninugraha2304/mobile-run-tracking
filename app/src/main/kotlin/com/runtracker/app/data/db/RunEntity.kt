@@ -15,5 +15,7 @@ data class RunEntity(
     val maxSpeed: Double,
     val calories: Double,
     val routePoints: String,
-    val avgPace: Double
+    val avgPace: Double,
+    val isInterval: Boolean = false,
+    val splitTimes: String = ""
 )

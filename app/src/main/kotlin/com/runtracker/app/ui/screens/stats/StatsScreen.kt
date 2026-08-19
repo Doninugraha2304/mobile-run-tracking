@@ -1,7 +1,9 @@
 package com.runtracker.app.ui.screens.stats
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -10,9 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.runtracker.app.ui.components.SectionTitle
 import com.runtracker.app.ui.theme.*
 import com.runtracker.app.util.LocationUtils
 import com.runtracker.app.viewmodel.RunViewModel
@@ -27,30 +28,27 @@ fun StatsScreen(
     val weeklyCalories by viewModel.weeklyCalories.collectAsState()
     val weeklyCount by viewModel.weeklyCount.collectAsState()
     val weeklyDuration by viewModel.weeklyDuration.collectAsState()
-
     val monthlyDistance by viewModel.monthlyDistance.collectAsState()
     val monthlyCalories by viewModel.monthlyCalories.collectAsState()
     val monthlyCount by viewModel.monthlyCount.collectAsState()
     val monthlyDuration by viewModel.monthlyDuration.collectAsState()
+    val totalRuns by viewModel.totalRuns.collectAsState()
+    val totalAllDistance by viewModel.totalAllDistance.collectAsState()
+    val totalAllCalories by viewModel.totalAllCalories.collectAsState()
+    val bestDistance by viewModel.bestDistance.collectAsState()
+    val bestPace by viewModel.bestPace.collectAsState()
+    val bestSpeed by viewModel.bestSpeed.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text("Statistik", fontWeight = FontWeight.Bold, color = AccentGreen)
-                },
+                title = { Text("Statistik", fontWeight = FontWeight.Bold, color = AccentGreen) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Kembali",
-                            tint = AccentGreen
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali", tint = AccentGreen)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -59,116 +57,102 @@ fun StatsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(Dimensions.spacing_lg),
+            verticalArrangement = Arrangement.spacedBy(Dimensions.spacing_xxl)
         ) {
-            Text(
-                "Minggu Ini",
-                color = AccentGreen,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+            SectionTitle("Minggu Ini")
+            StatsSummaryCard(weeklyDistance, weeklyCalories, weeklyCount, weeklyDuration)
 
-            StatsCard(
-                distance = weeklyDistance,
-                calories = weeklyCalories,
-                count = weeklyCount,
-                duration = weeklyDuration
-            )
+            SectionTitle("Bulan Ini")
+            StatsSummaryCard(monthlyDistance, monthlyCalories, monthlyCount, monthlyDuration)
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                "Bulan Ini",
-                color = AccentGreen,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-
-            StatsCard(
-                distance = monthlyDistance,
-                calories = monthlyCalories,
-                count = monthlyCount,
-                duration = monthlyDuration
-            )
+            SectionTitle("Total Semua")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
+                shape = RoundedCornerShape(Dimensions.radius_lg)
+            ) {
+                Column(modifier = Modifier.padding(Dimensions.card_padding)) {
+                    StatsRow(
+                        items = listOf(
+                            StatsItemData(Icons.Default.DirectionsRun, "$totalRuns", "Total Lari"),
+                            StatsItemData(Icons.Default.EmojiEvents, LocationUtils.formatDistance(totalAllDistance), "Total Jarak")
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(Dimensions.spacing_lg))
+                    StatsRow(
+                        items = listOf(
+                            StatsItemData(Icons.Default.LocalFireDepartment, String.format("%.0f kk", totalAllCalories), "Total Kalori"),
+                            StatsItemData(Icons.Default.Speed, LocationUtils.formatPace(bestPace), "Pace Terbaik")
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(Dimensions.spacing_lg))
+                    StatsRow(
+                        items = listOf(
+                            StatsItemData(Icons.Default.EmojiEvents, LocationUtils.formatDistance(bestDistance), "Jarak Terjauh"),
+                            StatsItemData(Icons.Default.Speed, LocationUtils.formatSpeed(bestSpeed), "Kecepatan Tertinggi")
+                        )
+                    )
+                }
+            }
         }
     }
 }
 
+data class StatsItemData(
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val value: String,
+    val label: String
+)
+
 @Composable
-fun StatsCard(
-    distance: Double,
-    calories: Double,
-    count: Int,
-    duration: Long
-) {
+fun StatsSummaryCard(distance: Double, calories: Double, count: Int, duration: Long) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(Dimensions.radius_lg)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                StatItem(
-                    icon = Icons.Default.DirectionsRun,
-                    value = LocationUtils.formatDistance(distance),
-                    label = "Jarak"
+        Column(modifier = Modifier.padding(Dimensions.card_padding)) {
+            StatsRow(
+                items = listOf(
+                    StatsItemData(Icons.Default.DirectionsRun, LocationUtils.formatDistance(distance), "Jarak"),
+                    StatsItemData(Icons.Default.LocalFireDepartment, String.format("%.0f", calories), "Kalori (kk)")
                 )
-                StatItem(
-                    icon = Icons.Default.LocalFireDepartment,
-                    value = String.format("%.0f", calories),
-                    label = "Kalori (kk)"
+            )
+            Spacer(modifier = Modifier.height(Dimensions.spacing_lg))
+            StatsRow(
+                items = listOf(
+                    StatsItemData(Icons.Default.FitnessCenter, "$count", "Jumlah Lari"),
+                    StatsItemData(Icons.Default.Timer, LocationUtils.formatDuration(duration), "Durasi Total")
                 )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                StatItem(
-                    icon = Icons.Default.FitnessCenter,
-                    value = "$count",
-                    label = "Jumlah Lari"
-                )
-                StatItem(
-                    icon = Icons.Default.Timer,
-                    value = LocationUtils.formatDuration(duration),
-                    label = "Durasi Total"
-                )
-            }
+            )
         }
     }
 }
 
 @Composable
-fun StatItem(
+fun StatsRow(items: List<StatsItemData>) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        items.forEach { item ->
+            StatsItem(icon = item.icon, value = item.value, label = item.label)
+        }
+    }
+}
+
+@Composable
+fun StatsItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     value: String,
     label: String
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = AccentGreen,
-            modifier = Modifier.size(28.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            value,
-            color = AccentGreen,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-        Text(
-            label,
-            color = LightGray,
-            fontSize = 13.sp
-        )
+        Icon(imageVector = icon, contentDescription = null, tint = AccentGreen, modifier = Modifier.size(Dimensions.icon_xl))
+        Spacer(modifier = Modifier.height(Dimensions.spacing_sm))
+        Text(value, color = AccentGreen, fontWeight = FontWeight.Bold, fontSize = Dimensions.text_xxl)
+        Text(label, color = LightGray, fontSize = Dimensions.text_md)
     }
 }

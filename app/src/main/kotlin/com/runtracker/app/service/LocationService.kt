@@ -197,8 +197,16 @@ class LocationService : Service() {
             ).apply {
                 description = "Menampilkan status pelacakan lari"
             }
+            val splitChannel = NotificationChannel(
+                Constants.SPLIT_NOTIFICATION_CHANNEL_ID,
+                "Notifikasi Split",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifikasi setiap kilometer"
+            }
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
+            manager.createNotificationChannel(splitChannel)
         }
     }
 

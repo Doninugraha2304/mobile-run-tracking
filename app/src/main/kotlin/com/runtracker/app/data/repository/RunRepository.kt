@@ -30,6 +30,22 @@ class RunRepository @Inject constructor(
     fun getAvgSpeedBetween(start: Long, end: Long): Flow<Double?> =
         runDao.getAvgSpeedBetween(start, end)
 
+    fun getBestDistance(): Flow<Double?> = runDao.getBestDistance()
+
+    fun getBestPace(): Flow<Double?> = runDao.getBestPace()
+
+    fun getBestSpeed(): Flow<Double?> = runDao.getBestSpeed()
+
+    fun getLongestDuration(): Flow<Long?> = runDao.getLongestDuration()
+
+    fun getTotalDistance(): Flow<Double?> = runDao.getTotalDistance()
+
+    fun getTotalRuns(): Flow<Int> = runDao.getTotalRuns()
+
+    fun getTotalCalories(): Flow<Double?> = runDao.getTotalCalories()
+
+    fun getTotalDuration(): Flow<Long?> = runDao.getTotalDuration()
+
     suspend fun insertRun(run: RunEntity): Long = runDao.insertRun(run)
 
     suspend fun getRunById(id: Long): RunEntity? = runDao.getRunById(id)
